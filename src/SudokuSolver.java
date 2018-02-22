@@ -1,16 +1,51 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
+import com.sun.org.apache.regexp.internal.CharacterArrayCharacterIterator;
+
+import java.util.*;
 
 public class SudokuSolver {
-    public static void main(String[] args) {
-        String digits = "123456789";
-        String rows = "ABCDEFGHI";
-        String cols = digits;
+    private static final String digits = "123456789";
+    private static final String rows = "ABCDEFGHI";
+    private static final String cols = digits;
 
-        ArrayList<String> squares = crossProduct(rows, cols);
-        HashMap<String, ArrayList<ArrayList<String>>> units = getUnits(rows, cols, squares);
-        HashMap<String, LinkedHashSet<String>> peers = getPeers(squares, units);
+    private static ArrayList<String> squares;
+    private static HashMap<String, ArrayList<ArrayList<String>>> units;
+    private static HashMap<String, LinkedHashSet<String>> peers;
+
+    private static HashMap<String, String> gridValues;
+    private static HashMap<String, String> solution;
+
+    public static void main(String[] args) {
+        squares = crossProduct(rows, cols);
+        units = getUnits();
+        peers = getPeers();
+
+        gridValues = parseUserInput();
+        solution = solveGrid();
+    }
+
+    private static HashMap<String, String> solveGrid() {
+        HashMap<String, String> values = new HashMap<>();
+        for (String square : squares) {
+            values.put(square, digits);
+        }
+
+        for (Map.Entry<String, String> gridValue : gridValues.entrySet()) {
+            String square = gridValue.getKey();
+            String cellValue = gridValue.getValue();
+            if (digits.contains(cellValue) && assignValue(values, square, cellValue) == null) {
+                return null;
+            }
+        }
+
+        return values;
+    }
+
+    private static HashMap<String, String> assignValue(HashMap<String, String> values, String square, String cellValue) {
+        return null;
+    }
+
+    private static HashMap<String, String> eliminateValue(HashMap<String, String> values, String square, String cellValue) {
+        return null;
     }
 
     private static ArrayList<String> crossProduct(String a, String b) {
@@ -24,7 +59,26 @@ public class SudokuSolver {
         return crossProduct;
     }
 
-    private static ArrayList<ArrayList<String>> getUnitList(String rows, String cols) {
+    private static HashMap<String, ArrayList<ArrayList<String>>> getUnits() {
+        HashMap<String, ArrayList<ArrayList<String>>> unitsHashMap = new HashMap<>();
+
+        ArrayList<ArrayList<String>> unitList = getUnitList();
+
+        for (String square : squares) {
+            ArrayList<ArrayList<String>> currSquareUnits = new ArrayList<>();
+            for (ArrayList<String> unit : unitList) {
+                if (unit.contains(square)) {
+                    currSquareUnits.add(unit);
+                }
+            }
+            unitsHashMap.put(square, currSquareUnits);
+        }
+
+        return unitsHashMap;
+    }
+
+
+    private static ArrayList<ArrayList<String>> getUnitList() {
         ArrayList<ArrayList<String>> unitList = new ArrayList<>();
 
         // column units
@@ -58,25 +112,7 @@ public class SudokuSolver {
         return unitList;
     }
 
-    private static HashMap<String, ArrayList<ArrayList<String>>> getUnits(String rows, String cols, ArrayList<String> squares) {
-        HashMap<String, ArrayList<ArrayList<String>>> unitsHashMap = new HashMap<>();
-
-        ArrayList<ArrayList<String>> unitList = getUnitList(rows, cols);
-
-        for (String square : squares) {
-            ArrayList<ArrayList<String>> currSquareUnits = new ArrayList<>();
-            for (ArrayList<String> unit : unitList) {
-                if (unit.contains(square)) {
-                    currSquareUnits.add(unit);
-                }
-            }
-            unitsHashMap.put(square, currSquareUnits);
-        }
-
-        return unitsHashMap;
-    }
-
-    private static HashMap<String, LinkedHashSet<String>> getPeers(ArrayList<String> squares, HashMap<String, ArrayList<ArrayList<String>>> units) {
+    private static HashMap<String, LinkedHashSet<String>> getPeers() {
         HashMap<String, LinkedHashSet<String>> peersHashMap = new HashMap<>();
 
         for (String square : squares) {
@@ -92,5 +128,54 @@ public class SudokuSolver {
             peersHashMap.put(square, currSquarePeers);
         }
         return peersHashMap;
+    }
+
+    private static HashMap<String, String> parseUserInput() {
+        ArrayList<String> gridChars = getGridCharsFromUser();
+        HashMap<String, String> gridValues = getGridValues(gridChars);
+
+        return gridValues;
+    }
+
+    private static ArrayList<String> getGridCharsFromUser() {
+        Scanner userInputScanner = new Scanner(System.in);
+        System.out.println("Enter grid and press enter twice:");
+
+        ArrayList<String> gridChars = new ArrayList<>();
+        StringBuilder input = new StringBuilder();
+        String line;
+
+        while (userInputScanner.hasNextLine()) {
+            line = userInputScanner.nextLine();
+            if (line.isEmpty()) {
+                break;
+            }
+            input.append(line);
+        }
+
+        String gridCharsString = input.toString();
+        for (int i = 0; i < gridCharsString.length(); i++) {
+            char ch = gridCharsString.charAt(i);
+            if (Character.isDigit(ch) || ch == '.') {
+                gridChars.add(String.valueOf(ch));
+            }
+        }
+
+        System.out.println(gridChars.size());
+        return gridChars;
+    }
+
+    private static HashMap<String, String> getGridValues(ArrayList<String> gridChars) {
+        HashMap<String, String> gridValues = new HashMap<>();
+
+        for (int i = 0; i < gridChars.size(); i++) {
+            gridValues.put(squares.get(i), gridChars.get(i));
+        }
+
+        return gridValues;
+    }
+
+    private static void displayGrid() {
+
     }
 }
