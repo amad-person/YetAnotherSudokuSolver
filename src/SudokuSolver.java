@@ -1,6 +1,8 @@
-import com.sun.org.apache.regexp.internal.CharacterArrayCharacterIterator;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Scanner;
 
 public class SudokuSolver {
     private static final String digits = "123456789";
@@ -12,6 +14,7 @@ public class SudokuSolver {
     private static HashMap<String, LinkedHashSet<String>> peers;
 
     private static HashMap<String, String> gridValues;
+    private static HashMap<String, String> values;
     private static HashMap<String, String> solution;
 
     public static void main(String[] args) {
@@ -23,8 +26,7 @@ public class SudokuSolver {
         solution = solveGrid();
     }
 
-    private static HashMap<String, String> solveGrid() {
-        HashMap<String, String> values = new HashMap<>();
+    private static HashMap<String, String> parseGrid() {
         for (String square : squares) {
             values.put(square, digits);
         }
@@ -32,7 +34,7 @@ public class SudokuSolver {
         for (Map.Entry<String, String> gridValue : gridValues.entrySet()) {
             String square = gridValue.getKey();
             String cellValue = gridValue.getValue();
-            if (digits.contains(cellValue) && assignValue(values, square, cellValue) == null) {
+            if (digits.contains(cellValue) && assignValue(square, cellValue) == null) {
                 return null;
             }
         }
@@ -40,12 +42,57 @@ public class SudokuSolver {
         return values;
     }
 
-    private static HashMap<String, String> assignValue(HashMap<String, String> values, String square, String cellValue) {
-        return null;
+    private static HashMap<String, String> assignValue(String square, String cellValue) {
+        String otherValues = values.get(square).replace(cellValue, "");
+
+        for (int i = 0; i < otherValues.length(); i++) {
+            String otherCellValue = String.valueOf(otherValues.charAt(i));
+
+            if (eliminateValue(square, otherCellValue) == null) {
+                return null;
+            }
+        }
+
+        return values;
     }
 
-    private static HashMap<String, String> eliminateValue(HashMap<String, String> values, String square, String cellValue) {
-        return null;
+    private static HashMap<String, String> eliminateValue(String square, String cellValue) {
+        if (!(values.get(square).contains(cellValue))) {
+            return values;
+        }
+
+        values.put(square, values.get(square).replace(cellValue, ""));
+
+        if(values.get(square).length() == 0)  {
+            return null;
+        } else if (values.get(square).length() == 1) {
+            String valToRemove = values.get(square);
+            for (String peer : peers.get(square)) {
+                if(eliminateValue(peer, valToRemove) == null) {
+                    return null;
+                }
+            }
+        }
+
+        for (ArrayList<String> unit : units.get(cellValue)) {
+            ArrayList<String> cellPlaces = new ArrayList<>();
+
+            for (String otherSquare : unit) {
+                if(values.get(otherSquare).contains(cellValue)) {
+                    cellPlaces.add(otherSquare);
+                }
+            }
+
+            if(cellPlaces.isEmpty()) {
+                return null;
+            } else if (cellPlaces.size() == 1) {
+                if(assignValue(cellPlaces.get(0), cellValue) == null) {
+                    return null;
+                }
+            }
+        }
+
+        return values;
     }
 
     private static ArrayList<String> crossProduct(String a, String b) {
@@ -176,6 +223,13 @@ public class SudokuSolver {
     }
 
     private static void displayGrid() {
-
+        int index = 0;
+        for (String square : squares) {
+            System.out.print(values.get(square));
+            index++;
+            if(index % 9 == 0) {
+                System.out.println();
+            }
+        }
     }
 }
