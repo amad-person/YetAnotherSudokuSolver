@@ -1,6 +1,10 @@
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 public class SudokuBoard {
     private final String digits = "123456789";
@@ -41,7 +45,7 @@ public class SudokuBoard {
     }
 
     private void setSquares() {
-        squares = SudokuUtility.crossProduct(rows, cols);
+        squares = SudokuSolverUtility.crossProduct(rows, cols);
     }
 
     public LinkedHashMap<String, ArrayList<ArrayList<String>>> getUnits() {
@@ -106,12 +110,12 @@ public class SudokuBoard {
 
         // column units
         for (int c = 0; c < cols.length(); c++) {
-            unitList.add(SudokuUtility.crossProduct(rows, String.valueOf(cols.charAt(c))));
+            unitList.add(SudokuSolverUtility.crossProduct(rows, String.valueOf(cols.charAt(c))));
         }
 
         // row units
         for (int r = 0; r < rows.length(); r++) {
-            unitList.add(SudokuUtility.crossProduct(String.valueOf((rows.charAt(r))), cols));
+            unitList.add(SudokuSolverUtility.crossProduct(String.valueOf((rows.charAt(r))), cols));
         }
 
         // set up for box units
@@ -128,7 +132,7 @@ public class SudokuBoard {
         // box units
         for (String rb : rowBox) {
             for (String cb : colBox) {
-                unitList.add(SudokuUtility.crossProduct(rb, cb));
+                unitList.add(SudokuSolverUtility.crossProduct(rb, cb));
             }
         }
 
