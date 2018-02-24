@@ -42,10 +42,19 @@ public final class SudokuUiUtility {
     public static void displayBoard(ArrayList<String> squares, LinkedHashMap<String, String> values) {
         int index = 0;
         for (String square : squares) {
-            System.out.print(values.get(square));
+            System.out.print(values.get(square) + " ");
             index++;
+
+            if((index % 3 == 0 || index % 6 == 0) && (index % 9 != 0)) {
+                System.out.print("| ");
+            }
+
             if (index % 9 == 0) {
                 System.out.println();
+            }
+
+            if(index % 27 == 0 && index % 81 != 0) {
+                System.out.println("---------------------");
             }
         }
     }

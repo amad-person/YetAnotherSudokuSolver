@@ -124,8 +124,9 @@ public class SudokuSolver {
 
     private static void displayResult(SudokuValues sudokuValues) {
         if(!(sudokuValues.getShouldDiscardValues())) {
-            System.out.println("Solution: ");
+            System.out.println("Solution:\n=====================");
             SudokuUiUtility.displayBoard(sudokuBoard.getSquares(), sudokuValues.getValues());
+            System.out.println("=====================");
         } else {
             System.out.println("Couldn't find a solution.");
         }

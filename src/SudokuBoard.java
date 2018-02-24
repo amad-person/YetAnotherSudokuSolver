@@ -1,10 +1,6 @@
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 public class SudokuBoard {
     private final String digits = "123456789";
